@@ -1,0 +1,27 @@
+{
+  "name": "digital-signing",
+  "displayName": "Digital Signing",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.58.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./build/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "digital-signing.sign",
+        "title": "Sign"
+      }
+    ],
+    "configuration": {
+      "title": "Digital Signing",
+      "properties": {}
+    }
+  },
+  "activationEvents": [
+    "onCommand:digital-signing.sign"
+  ]
+}
