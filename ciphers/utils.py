@@ -1,5 +1,5 @@
 import random
-from typing import ClassVar, Dict, List, Tuple
+from typing import ClassVar, List
 
 class PrimeGenerator:
     __PRIMES: ClassVar[List[int]]
