@@ -34,16 +34,20 @@ def round(A, RC):
     C = [A[x][0] ^ A[x][1] ^ A[x][2] ^ A[x][3] ^ A[x][4] for x in range(5)]
     #print(C)
     D = [C[x-1] ^  rot(C[(x+1) % 5], 1) for x in range(5)]
+    #print(D)
     A = [[A[x][y] ^ D[x] for y in range(5)] for x in range(5)]
+    #print(A)
 
     # ρ dan π
     (x, y) = (1, 0)
     cur = A[x][y]
     for t in range(24):
         (x, y) = (y, (2*x + 3*y) % 5)
+        old_cur = cur
         cur = A[x][y]
-        A[x][y] = rot(cur, (t+1)*(t+2)//2)
-
+        A[x][y] = rot(old_cur, (t+1)*(t+2)//2)
+    #print(A)
+    
     # χ
     for y in range(5):
         B = [A[x][y] for x in range(5)]
@@ -77,40 +81,42 @@ def keccakPermutation(state):
             state[8*(x+5*y) : 8*(x+5*y)+8] = put(A[x][y])
     return state
 
-def keccak(rate, capacity, inputBytes, delimitedSuffix, outputBytesLen):
+def keccak(r, c, inputBytes, d, outputBytesLen):
     state = bytearray(200)
-    rateInBytes = rate//8
+    rInBytes = r//8
     nBlock = 0
     i = 0
     # Absorbing
     while (i < len(inputBytes)):
-        nBlock = min(len(inputBytes) - i, rateInBytes)
+        nBlock = min(len(inputBytes) - i, rInBytes)
         for idx in range(nBlock):
             # XOR setiap elemen S (state) dengan blok Pi (input)
             state[idx] ^= inputBytes[idx + i]
         i += nBlock
-        if (nBlock == rateInBytes):
+        if (nBlock == rInBytes):
             state = keccakPermutation(state)
             #print(state)
             nBlock = 0
     #print(state)
+
     # Padding
-    state[nBlock] ^= delimitedSuffix
-    if (((delimitedSuffix & 0x80) != 0) and (nBlock == (rateInBytes-1))):
+    state[nBlock] ^= d
+    if (((d & 0x80) != 0) and (nBlock == (rInBytes-1))):
         state = keccakPermutation(state)
-    state[rateInBytes-1] ^= 0x80
+    state[rInBytes-1] ^= 0x80
     #print(state)
     state = keccakPermutation(state)
     #print(state)
+    
     # Squeezing
     Z = bytearray()
     while(outputBytesLen > 0):
-        nBlock = min(outputBytesLen, rateInBytes)
+        nBlock = min(outputBytesLen, rInBytes)
         Z += state[0:nBlock]
         outputBytesLen -= nBlock
         if (outputBytesLen > 0):
             state = keccakPermutation(state)
     return Z
 
-# Keccak 256
+# SHA3-256
 print(keccak(1088, 512, b'hehehe\r\n', 0x06, 256//8).hex())
