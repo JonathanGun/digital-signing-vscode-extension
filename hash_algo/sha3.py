@@ -1,4 +1,4 @@
-#CONSTANT
+# RC table
 RC = [
     0x0000000000000001,
     0x0000000000008082,
@@ -30,8 +30,9 @@ def rot(W, r):
     return ((W >> (64 - (r % 64))) + (W << (r % 64))) % (1 << 64)
 
 def round(A, RC):
-    # θ step
+    # θ
     C = [A[x][0] ^ A[x][1] ^ A[x][2] ^ A[x][3] ^ A[x][4] for x in range(5)]
+    #print(C)
     D = [C[x-1] ^  rot(C[(x+1) % 5], 1) for x in range(5)]
     A = [[A[x][y] ^ D[x] for y in range(5)] for x in range(5)]
 
@@ -50,4 +51,66 @@ def round(A, RC):
             A[x][y] = B[x] ^ ((~B[(x+1) % 5]) & B[(x+2) % 5])
 
     # ι
-    A[0][0] = A[0][0] ^ RC
+    A[0][0] ^= RC
+
+    return A
+
+def get(x):
+    sum = 0
+    for i in range(8):
+        sum += x[i] << (8*i)
+    return sum
+
+def put(x):
+    return list((x >> (8*i)) % 256 for i in range(8))
+
+def keccakPermutation(state):
+    A = [[get(state[8*(x+5*y) : 8*(x+5*y)+8]) for y in range(5)] for x in range(5)]
+    #print(A)
+    # 24 Round
+    for i in range(24):
+        A = round(A, RC[i])
+    #print(A)
+    state = bytearray(200)
+    for x in range(5):
+        for y in range(5):
+            state[8*(x+5*y) : 8*(x+5*y)+8] = put(A[x][y])
+    return state
+
+def keccak(rate, capacity, inputBytes, delimitedSuffix, outputBytesLen):
+    state = bytearray(200)
+    rateInBytes = rate//8
+    nBlock = 0
+    i = 0
+    # Absorbing
+    while (i < len(inputBytes)):
+        nBlock = min(len(inputBytes) - i, rateInBytes)
+        for idx in range(nBlock):
+            # XOR setiap elemen S (state) dengan blok Pi (input)
+            state[idx] ^= inputBytes[idx + i]
+        i += nBlock
+        if (nBlock == rateInBytes):
+            state = keccakPermutation(state)
+            #print(state)
+            nBlock = 0
+    #print(state)
+    # Padding
+    state[nBlock] ^= delimitedSuffix
+    if (((delimitedSuffix & 0x80) != 0) and (nBlock == (rateInBytes-1))):
+        state = keccakPermutation(state)
+    state[rateInBytes-1] ^= 0x80
+    #print(state)
+    state = keccakPermutation(state)
+    #print(state)
+    # Squeezing
+    Z = bytearray()
+    while(outputBytesLen > 0):
+        nBlock = min(outputBytesLen, rateInBytes)
+        Z += state[0:nBlock]
+        outputBytesLen -= nBlock
+        if (outputBytesLen > 0):
+            state = keccakPermutation(state)
+    return Z
+
+# Keccak 256
+print(keccak(1088, 512, b'hehehe\r\n', 0x06, 256//8).hex())
