@@ -1,7 +1,6 @@
 # RSA Algorithm: Digital Signature Version
 # Switch public key and private key
 
-from sha3 import keccak
 from textwrap import wrap
 from typing import List, Tuple
 from utils import PrimeGenerator
