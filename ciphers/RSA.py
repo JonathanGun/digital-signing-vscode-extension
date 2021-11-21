@@ -1,5 +1,7 @@
-# RSA Algorithm
+# RSA Algorithm: Digital Signature Version
+# Switch public key and private key
 
+from sha3 import keccak
 from textwrap import wrap
 from typing import List, Tuple
 from utils import PrimeGenerator
@@ -16,8 +18,8 @@ def block_to_text(m: List[int], block_size: int) -> str:
     return "".join(output)
 
 # Encrypt the ciphertext with RSA Algorithm
-def rsa_encryption(message: str, public_key: Tuple[int, int]) -> str:
-    e, n = public_key
+def rsa_encryption(message: str, private_key: Tuple[int, int]) -> str:
+    e, n = private_key
     block_size = len(str(n))
     padding_message = convert_and_padding(message, block_size - 1)
     
@@ -30,8 +32,8 @@ def rsa_encryption(message: str, public_key: Tuple[int, int]) -> str:
     return format(int(block_to_text(c, block_size)), '32x')
 
 # Decrypt the ciphertext with RSA Algorithm
-def rsa_decryption(ciphertext: str, private_key: Tuple[int, int]) -> str:
-    d, n = private_key
+def rsa_decryption(ciphertext: str, public_key: Tuple[int, int]) -> str:
+    d, n = public_key
     block_size = len(str(n))
     padding_ciphertext = convert_and_padding(ciphertext, block_size)
     
@@ -51,9 +53,9 @@ def generate_rsa_key():
     toi = (p - 1) * (q - 1)
     e = PrimeGenerator.random()
     d = pow(e, -1, toi)
-    public_key = [e, n]
-    private_key = [d, n]
-    return [public_key, private_key]
+    private_key = [e, n]
+    public_key = [d, n]
+    return [private_key, public_key]
 
 # Add padding to the message so its length divisible by block size
 def convert_and_padding(message: str, block_size: int):
@@ -75,24 +77,24 @@ if (__name__ == "__main__"):
         e = PrimeGenerator.random()
 
         d = pow(e, -1, toi)
-        public_key = (e, n)
-        private_key = (d, n)
+        private_key = (e, n)
+        public_key = (d, n)
         print("Nilai p dan q\t\t:", p, ",", q)
         print("Nilai n dan toi\t\t:", n, ",", toi)
-        print("Public key (e, n)\t:", public_key[0], ",", public_key[1])
-        print("Private key (d, n)\t:", public_key[0], ",", public_key[1])
+        print("Private key (e, n)\t:", private_key[0], ",", private_key[1])
+        print("Public key (d, n)\t:", public_key[0], ",", public_key[1])
 
-        with open ('../test/test-1.txt', 'rb') as f:
-            text = f.read()
-        
         # Contoh Penggunaan: Noted untuk Jojo
-        message = "5e4cd91d2e1599bb7e649f535dfaa570b012dc7fd9af39fc700d716d20b34f2b"
+        with open ('../test/test-1.txt', 'rb') as f:
+            text_bytes = f.read()
+        
+        message = "7f1fbb380f462813587908403180b9e32d283de03017b44f4c887e31045d4821"
         print("Plaintext\t\t:", message)
 
-        ciphertext = rsa_encryption(message, public_key)
+        ciphertext = rsa_encryption(message, private_key)
         print("Ciphertext\t\t:", ciphertext)
 
-        decrypted_ciphertext = rsa_decryption(ciphertext, private_key)
+        decrypted_ciphertext = rsa_decryption(ciphertext, public_key)
         print("Decrypted ciphertext\t:", decrypted_ciphertext)
 
         if (decrypted_ciphertext == message):
