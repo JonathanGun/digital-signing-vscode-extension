@@ -18,6 +18,11 @@ class PrimeGenerator:
     @staticmethod
     def random():
         return random.choice(PrimeGenerator.__PRIMES)
+
+    @staticmethod
+    def random_above(n):
+        filtered_prime = [x for x in PrimeGenerator.__PRIMES if x >= n]
+        return random.choice(filtered_prime)
     
     @staticmethod
     def random_below(n):

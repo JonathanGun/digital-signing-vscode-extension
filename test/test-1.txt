@@ -1,4 +1,4 @@
-# Kriptografi Tugas 5
+# Kriptografi Tugas Ke-5
 
 ## Installing Requirements
 ### Linux
