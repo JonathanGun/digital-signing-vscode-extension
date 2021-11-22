@@ -39,14 +39,14 @@ def sign():
             ciphertext = rsa_encryption(hex, privkey)
             print(ciphertext)
             # append to end of file
-            editor.insert(
-                editor.cursor,
-                f"<ds>{ciphertext}</ds>",
-            )
             try:
-                vscode.window.show_info_message("Sign success!")
+                editor.insert(
+                    editor.cursor,
+                    f"<ds>{ciphertext}</ds>",
+                )
             except Exception:
                 pass
+            vscode.window.show_info_message("Sign success!")
     except Exception as e:
         print(e)
         vscode.window.show_info_message("Failed to sign!")
@@ -60,13 +60,16 @@ def verify():
             text = editor.document.get_text()
             print(text)
             # input public key
-            path = os.path.abspath(vscode.window.show_open_dialog(file_picker_option)[0]['path'][1:])
+            inp = vscode.window.show_open_dialog(file_picker_option)
+            print(inp)
+            path = os.path.abspath(inp[0]['path'][1:])
             print(path)
             with open(path, 'r') as f:
                 pubkey = list(map(int, f.read().split(",")))
+            print(pubkey)
             # parse signature and text
-            print(re.findall("^(.*)<ds>(.*)</ds>$", text))
-            text, signature = re.findall("^(.*)<ds>(.*)</ds>$", text)[0]
+            print(re.findall(r"^(.*)<ds>(.*)</ds>$", text, re.DOTALL))
+            text, signature = re.findall(r"^(.*)<ds>(.*)</ds>$", text, re.DOTALL)[0]
             print(text, signature)
             if signature:
                 # decrypt
@@ -87,27 +90,20 @@ def verify():
 def generate_key_pair():
     privkey, pubkey = generate_rsa_key()
 
-    # input path for pubkey
+    # input path
     pubkeypath = os.path.abspath(vscode.window.show_save_dialog({
         "title": "Public key file"
     })["path"][1:])
-    with open(pubkeypath, "w") as f:
-        f.write(",".join(map(str, pubkey)))
-    try:
-        vscode.window.show_info_message(f"Public key successfully saved at {pubkeypath}")
-    except Exception:
-        pass
-
-    # input path for privkey
     privkeypath = os.path.abspath(vscode.window.show_save_dialog({
         "title": "Private key file"
     })["path"][1:])
+    # write file
+    with open(pubkeypath, "w") as f:
+        f.write(",".join(map(str, pubkey)))
     with open(privkeypath, "w") as f:
         f.write(",".join(map(str, privkey)))
-    try:
-        vscode.window.show_info_message(f"Private key successfully saved at {privkeypath}")
-    except Exception:
-        pass
+    # info
+    vscode.window.show_info_message(f"Public and private key successfully saved at {pubkeypath}\n{privkeypath}")
 
 
 def ipc_main():
