@@ -43,9 +43,13 @@ def sign():
                 editor.cursor,
                 f"<ds>{ciphertext}</ds>",
             )
-            vscode.window.show_info_message("Sign success!")
+            try:
+                vscode.window.show_info_message("Sign success!")
+            except Exception:
+                pass
     except Exception as e:
         print(e)
+        vscode.window.show_info_message("Failed to sign!")
 
 
 @ext.command()
@@ -82,9 +86,28 @@ def verify():
 @ext.command()
 def generate_key_pair():
     privkey, pubkey = generate_rsa_key()
-    path = vscode.window.show_save_dialog()
-    print(path)
-    print(privkey, pubkey)
+
+    # input path for pubkey
+    pubkeypath = os.path.abspath(vscode.window.show_save_dialog({
+        "title": "Public key file"
+    })["path"][1:])
+    with open(pubkeypath, "w") as f:
+        f.write(",".join(map(str, pubkey)))
+    try:
+        vscode.window.show_info_message(f"Public key successfully saved at {pubkeypath}")
+    except Exception:
+        pass
+
+    # input path for privkey
+    privkeypath = os.path.abspath(vscode.window.show_save_dialog({
+        "title": "Private key file"
+    })["path"][1:])
+    with open(privkeypath, "w") as f:
+        f.write(",".join(map(str, privkey)))
+    try:
+        vscode.window.show_info_message(f"Private key successfully saved at {privkeypath}")
+    except Exception:
+        pass
 
 
 def ipc_main():
