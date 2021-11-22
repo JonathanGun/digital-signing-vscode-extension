@@ -86,6 +86,7 @@ def keccak(r, c, inputBytes, d, outputBytesLen):
     rInBytes = r//8
     nBlock = 0
     i = 0
+    print(inputBytes)
     # Absorbing
     while (i < len(inputBytes)):
         nBlock = min(len(inputBytes) - i, rInBytes)
@@ -119,4 +120,4 @@ def keccak(r, c, inputBytes, d, outputBytesLen):
     return Z
 
 # SHA3-256
-print(keccak(1088, 512, b'hehehe\r\n', 0x06, 256//8).hex())
+print(keccak(1024, 512, b'hehehe\r\n', 0x06, 256//8).hex())
