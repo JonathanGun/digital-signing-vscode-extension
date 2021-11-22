@@ -4,6 +4,7 @@ import sys
 
 # https://github.com/microsoft/vscode-extension-samples/blob/main/document-editing-sample/src/extension.ts
 import vscode
+
 from ciphers.RSA import generate_rsa_key, rsa_decryption, rsa_encryption
 from hash_algo.sha3 import keccak
 
