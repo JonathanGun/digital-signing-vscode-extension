@@ -26,64 +26,70 @@ RC = [
     0x8000000080008008
 ]
 
+
 def rot(W, r):
     return ((W >> (64 - (r % 64))) + (W << (r % 64))) % (1 << 64)
+
 
 def round(A, RC):
     # θ
     C = [A[x][0] ^ A[x][1] ^ A[x][2] ^ A[x][3] ^ A[x][4] for x in range(5)]
-    #print(C)
-    D = [C[x-1] ^  rot(C[(x+1) % 5], 1) for x in range(5)]
-    #print(D)
+    D = [C[x - 1] ^ rot(C[(x + 1) % 5], 1) for x in range(5)]
     A = [[A[x][y] ^ D[x] for y in range(5)] for x in range(5)]
-    #print(A)
 
     # ρ dan π
     (x, y) = (1, 0)
     cur = A[x][y]
     for t in range(24):
-        (x, y) = (y, (2*x + 3*y) % 5)
+        (x, y) = (y, (2 * x + 3 * y) % 5)
         old_cur = cur
         cur = A[x][y]
-        A[x][y] = rot(old_cur, (t+1)*(t+2)//2)
-    #print(A)
-    
+        A[x][y] = rot(old_cur, (t + 1) * (t + 2) // 2)
+
     # χ
     for y in range(5):
         B = [A[x][y] for x in range(5)]
         for x in range(5):
-            A[x][y] = B[x] ^ ((~B[(x+1) % 5]) & B[(x+2) % 5])
+            A[x][y] = B[x] ^ ((~B[(x + 1) % 5]) & B[(x + 2) % 5])
 
     # ι
     A[0][0] ^= RC
 
     return A
 
+
 def get(x):
     sum = 0
     for i in range(8):
-        sum += x[i] << (8*i)
+        sum += x[i] << (8 * i)
     return sum
 
+
 def put(x):
-    return list((x >> (8*i)) % 256 for i in range(8))
+    return list((x >> (8 * i)) % 256 for i in range(8))
+
 
 def keccakPermutation(state):
-    A = [[get(state[8*(x+5*y) : 8*(x+5*y)+8]) for y in range(5)] for x in range(5)]
-    #print(A)
+    A = [[get(state[8 * (x + 5 * y): 8 * (x + 5 * y) + 8]) for y in range(5)] for x in range(5)]
+
     # 24 Round
     for i in range(24):
         A = round(A, RC[i])
-    #print(A)
+
     state = bytearray(200)
     for x in range(5):
         for y in range(5):
-            state[8*(x+5*y) : 8*(x+5*y)+8] = put(A[x][y])
+            state[8 * (x + 5 * y): 8 * (x + 5 * y) + 8] = put(A[x][y])
     return state
 
-def keccak(r, c, inputBytes, d, outputBytesLen):
+
+def keccak(inputBytes):
+    # SHA3 (Keccak) - 256
+    r = 1088
+    d = 0x06
+    outputBytesLen = 256 // 8
     state = bytearray(200)
-    rInBytes = r//8
+    rInBytes = r // 8
     nBlock = 0
     i = 0
     # Absorbing
@@ -95,19 +101,15 @@ def keccak(r, c, inputBytes, d, outputBytesLen):
         i += nBlock
         if (nBlock == rInBytes):
             state = keccakPermutation(state)
-            #print(state)
             nBlock = 0
-    #print(state)
 
     # Padding
     state[nBlock] ^= d
-    if (((d & 0x80) != 0) and (nBlock == (rInBytes-1))):
+    if (((d & 0x80) != 0) and (nBlock == (rInBytes - 1))):
         state = keccakPermutation(state)
-    state[rInBytes-1] ^= 0x80
-    #print(state)
+    state[rInBytes - 1] ^= 0x80
     state = keccakPermutation(state)
-    #print(state)
-    
+
     # Squeezing
     Z = bytearray()
     while(outputBytesLen > 0):
@@ -118,5 +120,10 @@ def keccak(r, c, inputBytes, d, outputBytesLen):
             state = keccakPermutation(state)
     return Z
 
-# SHA3-256
-print(keccak(1088, 512, b'hehehe\r\n', 0x06, 256//8).hex())
+
+# Main program to test
+if (__name__ == "__main__"):
+    # SHA3-256
+    print(b'hehehe\r\n'.hex())
+    print(keccak(b'hehehe\r\n').hex())
+    print(keccak(b'halo gais').hex())
