@@ -32,7 +32,7 @@ def rsa_encryption(message: str, private_key: Tuple[int, int]) -> str:
         ci = pow(block, e, n)
         c.append(ci)
 
-    return format(int(block_to_text(c, block_size)), '32x')
+    return format(int(block_to_text(c, block_size)), '64x')
 
 
 # Decrypt the ciphertext with RSA Algorithm
@@ -47,7 +47,7 @@ def rsa_decryption(ciphertext: str, public_key: Tuple[int, int]) -> str:
         mi = pow(block, d, n)
         m.append(mi)
 
-    return format(int(block_to_text(m, block_size - 1)), '32x')
+    return format(int(block_to_text(m, block_size - 1)), '64x')
 
 
 # Generate rsa key

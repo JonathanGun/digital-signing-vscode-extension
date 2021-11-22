@@ -4,7 +4,7 @@ import re
 # https://github.com/microsoft/vscode-extension-samples/blob/main/document-editing-sample/src/extension.ts
 import vscode
 
-from ciphers.RSA import rsa_decryption, rsa_encryption
+from ciphers.RSA import rsa_decryption, rsa_encryption, generate_rsa_key
 from hash_algo.sha3 import keccak
 
 ext = vscode.Extension(name="digital-signing", display_name="Digital Signing", version="0.0.1")
@@ -45,7 +45,6 @@ def sign():
             vscode.window.show_info_message("Sign success!")
     except Exception as e:
         print(e)
-        vscode.window.show_info_message("Failed to sign!")
 
 
 @ext.command()
@@ -76,7 +75,15 @@ def verify():
                     return
     except Exception as e:
         print(e)
-        vscode.window.show_info_message("Not verified!")
+    vscode.window.show_info_message("Not verified!")
+
+
+@ext.command()
+def generate_key_pair():
+    privkey, pubkey = generate_rsa_key()
+    path = vscode.window.show_save_dialog()
+    print(path)
+    print(privkey, pubkey)
 
 
 vscode.build(ext)

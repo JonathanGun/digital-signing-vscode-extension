@@ -92,7 +92,6 @@ def keccak(inputBytes):
     rInBytes = r // 8
     nBlock = 0
     i = 0
-    print(inputBytes)
     # Absorbing
     while (i < len(inputBytes)):
         nBlock = min(len(inputBytes) - i, rInBytes)
@@ -127,3 +126,4 @@ if (__name__ == "__main__"):
     # SHA3-256
     print(b'hehehe\r\n'.hex())
     print(keccak(b'hehehe\r\n').hex())
+    print(keccak(b'halo gais').hex())

@@ -18,6 +18,10 @@
       {
         "command": "digital-signing.verify",
         "title": "Verify"
+      },
+      {
+        "command": "digital-signing.generateKeyPair",
+        "title": "Generate Key Pair"
       }
     ],
     "configuration": {
@@ -27,6 +31,7 @@
   },
   "activationEvents": [
     "onCommand:digital-signing.sign",
-    "onCommand:digital-signing.verify"
+    "onCommand:digital-signing.verify",
+    "onCommand:digital-signing.generateKeyPair"
   ]
 }
