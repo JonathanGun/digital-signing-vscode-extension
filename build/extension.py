@@ -1,10 +1,10 @@
 import os
 import re
+import sys
 
 # https://github.com/microsoft/vscode-extension-samples/blob/main/document-editing-sample/src/extension.ts
 import vscode
-
-from ciphers.RSA import rsa_decryption, rsa_encryption, generate_rsa_key
+from ciphers.RSA import generate_rsa_key, rsa_decryption, rsa_encryption
 from hash_algo.sha3 import keccak
 
 ext = vscode.Extension(name="digital-signing", display_name="Digital Signing", version="0.0.1")
@@ -86,4 +86,8 @@ def generate_key_pair():
     print(privkey, pubkey)
 
 
-vscode.build(ext)
+def ipc_main():
+    globals()[sys.argv[1]]()
+
+
+ipc_main()

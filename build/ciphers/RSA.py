@@ -34,6 +34,7 @@ def rsa_encryption(message: str, private_key: Tuple[int, int]) -> str:
 
     return format(int(block_to_text(c, block_size)), '064x')
 
+
 # Decrypt the ciphertext with RSA Algorithm
 def rsa_decryption(ciphertext: str, public_key: Tuple[int, int]) -> str:
     d, n = public_key
@@ -45,8 +46,8 @@ def rsa_decryption(ciphertext: str, public_key: Tuple[int, int]) -> str:
     for block in c:
         mi = pow(block, d, n)
         m.append(mi)
-    
     return format(int(block_to_text(m, block_size - 1)), '064x')
+
 
 # Generate rsa key
 def generate_rsa_key():
@@ -60,6 +61,7 @@ def generate_rsa_key():
     public_key = [d, n]
     return [private_key, public_key]
 
+
 # Add padding to the message so its length divisible by block size
 def convert_and_padding(message: str, block_size: int):
     int_message = str(int(message, 16))
@@ -68,8 +70,9 @@ def convert_and_padding(message: str, block_size: int):
     padding = "0" * padding_length
     return padding + int_message
 
+
 # Main program to test
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     private_key, public_key = generate_rsa_key()
     with open('test/default.pub', 'w') as f:
         f.write(str(public_key))
@@ -85,9 +88,8 @@ if (__name__ == "__main__"):
         print("Public key (d, n)\t:", public_key[0], ",", public_key[1])
 
         # Contoh Penggunaan: Noted untuk Jojo
-        with open ('test/surat.txt', 'rb') as f:
+        with open('test/surat.txt', 'rb') as f:
             text_bytes = f.read()
-        
         message = "02c15036e137e4f03c000df14f2dd365fc9f209cd5ddbf143daed5cbad8c7e52"
         print("Plaintext\t\t:", message)
 
