@@ -33,7 +33,7 @@ def sign():
             with open(path, 'r') as f:
                 privkey = list(map(int, f.read().split(",")))
             # digest / hash
-            hex = keccak(512, 512, text, 0x06, 256 // 8).hex()
+            hex = keccak(text).hex()
             print(hex)
             # encrypt
             ciphertext = rsa_encryption(hex, privkey)
@@ -70,7 +70,7 @@ def verify():
                 plaintext = rsa_decryption(signature, pubkey)
                 print(plaintext)
                 # check with original text
-                hex = keccak(512, 512, text.encode('utf-8'), 0x06, 256 // 8).hex()
+                hex = keccak(text.encode('utf-8')).hex()
                 print(hex)
                 if plaintext == hex:
                     vscode.window.show_info_message("Verified!")
