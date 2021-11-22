@@ -85,7 +85,7 @@ if (__name__ == "__main__"):
         print("Public key (d, n)\t:", public_key[0], ",", public_key[1])
 
         # Contoh Penggunaan: Noted untuk Jojo
-        with open ('../test/surat.txt', 'rb') as f:
+        with open ('test/surat.txt', 'rb') as f:
             text_bytes = f.read()
         
         message = "02c15036e137e4f03c000df14f2dd365fc9f209cd5ddbf143daed5cbad8c7e52"
