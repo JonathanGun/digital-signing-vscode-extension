@@ -1,11 +1,10 @@
-import sys
+import os
+import re
+
 # https://github.com/microsoft/vscode-extension-samples/blob/main/document-editing-sample/src/extension.ts
 import vscode
-# import hashlib
-import re
-import os
-from ciphers.RSA import rsa_encryption, rsa_decryption
 
+from ciphers.RSA import rsa_decryption, rsa_encryption
 from hash_algo.sha3 import keccak
 
 ext = vscode.Extension(name="digital-signing", display_name="Digital Signing", version="0.0.1")

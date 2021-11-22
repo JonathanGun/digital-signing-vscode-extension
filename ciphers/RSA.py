@@ -3,11 +3,14 @@
 
 from textwrap import wrap
 from typing import List, Tuple
+
 from .utils import PrimeGenerator
+
 
 def text_to_block(message: str, block_size: int) -> List[int]:
     messages = list(map(int, wrap(message, block_size)))
     return messages
+
 
 def block_to_text(m: List[int], block_size: int) -> str:
     output = []
@@ -16,12 +19,13 @@ def block_to_text(m: List[int], block_size: int) -> str:
         output.append(format(block, print_format))
     return "".join(output)
 
+
 # Encrypt the ciphertext with RSA Algorithm
 def rsa_encryption(message: str, private_key: Tuple[int, int]) -> str:
     e, n = private_key
     block_size = len(str(n))
     padding_message = convert_and_padding(message, block_size - 1)
-    
+
     m = text_to_block(padding_message, block_size - 1)
     c = []
     for block in m:
@@ -30,19 +34,21 @@ def rsa_encryption(message: str, private_key: Tuple[int, int]) -> str:
 
     return format(int(block_to_text(c, block_size)), '32x')
 
+
 # Decrypt the ciphertext with RSA Algorithm
 def rsa_decryption(ciphertext: str, public_key: Tuple[int, int]) -> str:
     d, n = public_key
     block_size = len(str(n))
     padding_ciphertext = convert_and_padding(ciphertext, block_size)
-    
+
     c = text_to_block(padding_ciphertext, block_size)
     m = []
     for block in c:
         mi = pow(block, d, n)
         m.append(mi)
-    
+
     return format(int(block_to_text(m, block_size - 1)), '32x')
+
 
 # Generate rsa key
 def generate_rsa_key():
@@ -56,6 +62,7 @@ def generate_rsa_key():
     public_key = [d, n]
     return [private_key, public_key]
 
+
 # Add padding to the message so its length divisible by block size
 def convert_and_padding(message: str, block_size: int):
     int_message = str(int(message, 16))
@@ -63,6 +70,7 @@ def convert_and_padding(message: str, block_size: int):
     padding_length = block_size - (length % block_size)
     padding = "0" * padding_length
     return padding + int_message
+
 
 # Main program to test
 if (__name__ == "__main__"):
@@ -81,9 +89,9 @@ if (__name__ == "__main__"):
         print("Public key (d, n)\t:", public_key[0], ",", public_key[1])
 
         # Contoh Penggunaan: Noted untuk Jojo
-        with open ('test/surat.txt', 'rb') as f:
+        with open('test/surat.txt', 'rb') as f:
             text_bytes = f.read()
-        
+
         message = "7f1fbb380f462813587908403180b9e32d283de03017b44f4c887e31045d4821"
         print("Plaintext\t\t:", message)
 
