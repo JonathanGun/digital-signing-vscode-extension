@@ -28,7 +28,7 @@ def rsa_encryption(message: str, private_key: Tuple[int, int]) -> str:
         ci = pow(block, e, n)
         c.append(ci)
 
-    return format(int(block_to_text(c, block_size)), '32x')
+    return format(int(block_to_text(c, block_size)), '064x')
 
 # Decrypt the ciphertext with RSA Algorithm
 def rsa_decryption(ciphertext: str, public_key: Tuple[int, int]) -> str:
@@ -42,7 +42,7 @@ def rsa_decryption(ciphertext: str, public_key: Tuple[int, int]) -> str:
         mi = pow(block, d, n)
         m.append(mi)
     
-    return format(int(block_to_text(m, block_size - 1)), '32x')
+    return format(int(block_to_text(m, block_size - 1)), '064x')
 
 # Generate rsa key
 def generate_rsa_key():
@@ -84,10 +84,10 @@ if (__name__ == "__main__"):
         print("Public key (d, n)\t:", public_key[0], ",", public_key[1])
 
         # Contoh Penggunaan: Noted untuk Jojo
-        with open ('../test/test-1.txt', 'rb') as f:
+        with open ('../test/surat.txt', 'rb') as f:
             text_bytes = f.read()
         
-        message = "7f1fbb380f462813587908403180b9e32d283de03017b44f4c887e31045d4821"
+        message = "02c15036e137e4f03c000df14f2dd365fc9f209cd5ddbf143daed5cbad8c7e52"
         print("Plaintext\t\t:", message)
 
         ciphertext = rsa_encryption(message, private_key)
